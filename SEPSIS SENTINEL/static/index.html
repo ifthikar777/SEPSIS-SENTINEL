@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SepsisGuard | Clinician Decision Support System</title>
+    <!-- Fonts and icons are vendored locally (static/vendor/) so the dashboard
+         renders correctly on an air-gapped or offline ICU machine. No external
+         hosts are contacted at runtime. See static/vendor/README.md. -->
+    <!-- Google Fonts: Outfit (variable, weights 300–700) -->
+    <link rel="preload" href="vendor/fonts/QGYvz_MVcBeNP4NJtEtq.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="vendor/outfit.css?v=18">
+    <!-- Font Awesome Free 6.4.0 — solid style only (the only family this UI uses) -->
+    <link rel="preload" href="vendor/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="vendor/fontawesome.min.css?v=18">
+    <link rel="stylesheet" href="vendor/solid.min.css?v=18">
+    <!-- ?v= is a cache-busting version tag: bump it whenever style.css or
+         client.js change, otherwise browsers keep serving the stale copy. -->
+    <link rel="stylesheet" href="style.css?v=18">
+    <!-- Visual theme layer. Restyles surfaces/type/colour only — layout rules,
+         element IDs and class names stay in style.css so behaviour is unchanged. -->
+    <link rel="stylesheet" href="theme.css?v=18">
+</head>
+<body class="layout-3col">
+    <div class="glass-bg-layer"></div>
+    <div class="app-container">
+        
+        <!-- Persistent Academic Disclosures & Banners -->
+        <div class="academic-banners-bar">
+            <div id="sample-data-badge" class="academic-badge tooltip" data-tooltip="Loading dataset provenance…">
+                <i class="fa-solid fa-database"></i> <span id="sample-data-badge-text">Loading dataset…</span>
+            </div>
+            <div id="live-replay-badge" class="academic-badge badge-replay hidden">
+                <i class="fa-solid fa-circle-play blinking-dot"></i> Simulated Live Replay Active
+            </div>
+            <div class="study-mode-toggle-container">
+                <span class="toggle-label">Interface Layout Mode:</span>
+                <button id="layout-toggle-btn" class="toggle-switch-btn">
+                    <span id="layout-toggle-text">3-Column (HCI optimized)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <i class="fa-solid fa-heart-pulse pulse-icon"></i>
+                <div class="logo-text">
+                    <h1>SepsisGuard</h1>
+                    <span class="logo-subtitle">Real-Time ICU Sepsis Prediction System</span>
+                </div>
+            </div>
+            
+            <div class="header-controls">
+                <div class="control-group">
+                    <label for="patient-search"><i class="fa-solid fa-magnifying-glass"></i> Find Patient</label>
+                    <div class="patient-picker">
+                        <input type="search" id="patient-search" class="input-control patient-search-input"
+                               placeholder="Filter by ID…" autocomplete="off"
+                               aria-label="Filter patient list by ID"
+                               aria-describedby="patient-count-hint">
+                        <select id="patient-select" class="dropdown-control" aria-label="Select patient">
+                            <option value="" disabled selected>Select Patient...</option>
+                        </select>
+                    </div>
+                    <span id="patient-count-hint" class="patient-count-hint" aria-live="polite">—</span>
+                </div>
+
+                <div class="tts-master-control">
+                    <button id="toggle-mute-btn" class="icon-btn tooltip" data-tooltip="Toggle Voice Readback">
+                        <i id="mute-icon" class="fa-solid fa-volume-up"></i>
+                    </button>
+                    <span class="tts-status-text">Voice Active</span>
+                </div>
+
+                <!-- Hands-free voice input: an alternative interaction channel to
+                     mouse/keyboard. Ordering commands still route through the normal
+                     confirmation dialog — voice never places an order on its own. -->
+                <div class="voice-input-control" id="voice-input-control">
+                    <button id="voice-listen-btn" class="icon-btn tooltip"
+                            data-tooltip="Voice commands (V) — say “help” for the list"
+                            aria-label="Toggle voice command listening" aria-pressed="false">
+                        <i id="voice-icon" class="fa-solid fa-microphone-slash"></i>
+                    </button>
+                    <span class="voice-status-text" id="voice-status-text">Voice Cmds Off</span>
+                </div>
+                
+                <button id="about-modal-trigger" class="text-btn outline-btn"><i class="fa-solid fa-info-circle"></i> Study Info</button>
+            </div>
+        </header>
+
+        <!-- Simulated Live Replay Playback Control Panel -->
+        <div class="playback-control-panel card">
+            <div class="playback-title">
+                <i class="fa-solid fa-circle-play"></i>
+                <span>Simulated Live Replay Control Panel</span>
+            </div>
+            <div class="playback-controls">
+                <div class="speed-selector-group">
+                    <label for="playback-speed">Playback Rate:</label>
+                    <select id="playback-speed" class="dropdown-control compact-dropdown">
+                        <option value="1">1x (5s/hr)</option>
+                        <option value="10" selected>10x (1s/hr)</option>
+                        <option value="60">60x (0.1s/hr)</option>
+                    </select>
+                </div>
+                <div class="buttons-row">
+                    <button id="play-btn" class="control-btn play-btn" disabled><i class="fa-solid fa-play"></i> Start Replay</button>
+                    <button id="pause-btn" class="control-btn pause-btn hidden"><i class="fa-solid fa-pause"></i> Pause</button>
+                    <button id="reset-btn" class="control-btn reset-btn" disabled><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                </div>
+                <div class="latency-indicator">
+                    <i class="fa-solid fa-microchip"></i>
+                    <span>Inference Latency: </span>
+                    <strong id="avg-latency-display">0ms</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Layout -->
+        <main id="dashboard-main" class="dashboard-grid layout-3col-grid">
+            
+            <!-- Column 1: Left (At-a-Glance) -->
+            <div id="col-at-a-glance" class="card column-panel col-left">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-address-card"></i> Patient Overview</h2>
+                    <span id="risk-badge" class="badge">Baseline</span>
+                </div>
+                
+                <div class="card-body at-a-glance-body">
+                    <!-- Overarching AI alert status -->
+                    <div id="alert-banner" class="alert-status-banner alert-normal"
+                         role="status" aria-live="assertive" aria-atomic="true">
+                        <i id="alert-banner-icon" class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                        <span id="alert-banner-text">STATUS: NORMAL</span>
+                    </div>
+
+                    <!-- Patient Info Summary Card -->
+                    <div class="patient-id-card">
+                        <div class="patient-name-field">
+                            <span class="patient-label-title">ICU PATIENT RECORD</span>
+                            <h3 id="patient-id-display">Select a Patient ID</h3>
+                        </div>
+                        <div class="patient-demog-row">
+                            <div class="demog-item"><span class="lbl">Age:</span> <strong id="demog-age">—</strong></div>
+                            <div class="demog-item"><span class="lbl">Gender:</span> <strong id="demog-sex">—</strong></div>
+                            <div class="demog-item"><span class="lbl">Site:</span> <strong id="demog-dataset">—</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Vitals Status Grid (Abnormal flags colored) -->
+                    <div class="vitals-at-a-glance">
+                        <h4><i class="fa-solid fa-heart-pulse"></i> Current Bedside Vitals</h4>
+                        <div class="vitals-micro-grid">
+                            <div class="vital-tile" id="tile-hr">
+                                <span class="tile-title">Heart Rate</span>
+                                <span class="tile-val" id="tile-hr-val">—</span>
+                                <span class="tile-unit">bpm</span>
+                            </div>
+                            <div class="vital-tile" id="tile-o2sat">
+                                <span class="tile-title">O₂ Sat</span>
+                                <span class="tile-val" id="tile-o2sat-val">—</span>
+                                <span class="tile-unit">%</span>
+                            </div>
+                            <div class="vital-tile" id="tile-temp">
+                                <span class="tile-title">Temp</span>
+                                <span class="tile-val" id="tile-temp-val">—</span>
+                                <span class="tile-unit">°C</span>
+                            </div>
+                            <div class="vital-tile" id="tile-sbp">
+                                <span class="tile-title">BP (Sys)</span>
+                                <span class="tile-val" id="tile-sbp-val">—</span>
+                                <span class="tile-unit">mmHg</span>
+                            </div>
+                            <div class="vital-tile" id="tile-map">
+                                <span class="tile-title">MAP</span>
+                                <span class="tile-val" id="tile-map-val">—</span>
+                                <span class="tile-unit">mmHg</span>
+                            </div>
+                            <div class="vital-tile" id="tile-resp">
+                                <span class="tile-title">Resp Rate</span>
+                                <span class="tile-val" id="tile-resp-val">—</span>
+                                <span class="tile-unit">/min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline History Slider -->
+                <div class="timeline-container">
+                    <div class="timeline-header">
+                        <h3><i class="fa-solid fa-clock-rotate-left"></i> ICU Stay Timeline</h3>
+                        <span id="current-hour-display">Hour: 0</span>
+                    </div>
+                    <div class="slider-wrapper">
+                        <span class="slider-label">Hour 0</span>
+                        <input type="range" id="timeline-slider" min="0" max="0" value="0" class="slider-control" disabled>
+                        <span id="max-hour-label" class="slider-label">Hour 0</span>
+                    </div>
+                    <p class="timeline-hint"><i class="fa-solid fa-circle-info"></i> Drag slider to review historical measurements or monitor sepsis onset progression.</p>
+                </div>
+            </div>
+
+            <!-- Column 2: Center (The Future / Risk & What-If) -->
+            <div id="col-the-future" class="card column-panel col-center">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-gauge-high"></i> Sepsis Risk Simulation (What-If)</h2>
+                    <span class="badge badge-info">Interactive Mode</span>
+                </div>
+                
+                <div class="card-body center-body scrollable-container">
+                    <!-- Gauge and Comparison Scores Row -->
+                    <div class="prediction-comparison-row">
+                        <!-- Sepsis Risk Radial Gauge -->
+                        <div class="gauge-card">
+                            <div class="gauge-container">
+                                <svg class="radial-gauge" viewBox="0 0 100 100">
+                                    <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle id="gauge-fill" class="gauge-fill" cx="50" cy="50" r="45"></circle>
+                                </svg>
+                                <div class="gauge-text-overlay">
+                                    <span id="risk-percentage">0%</span>
+                                    <span class="risk-label">Sepsis Risk</span>
+                                </div>
+                            </div>
+                            <div class="risk-subtexts">
+                                <span id="risk-category" class="risk-category-label">—</span>
+                                <div class="model-confidence-box">
+                                    <span class="lbl tooltip" data-tooltip="How close this risk score is to a 50/50 call — not a statistical confidence interval.">Decision Certainty: </span><strong id="model-decision-certainty">0.0%</strong>
+                                    <div class="confidence-bar-container">
+                                        <div id="decision-certainty-bar" class="confidence-bar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="model-confidence-box" style="margin-top: 0.5rem;">
+                                    <span class="lbl tooltip" data-tooltip="Percentage of this reading's features that are real measurements rather than forward-filled or median-imputed values.">Data Completeness: </span><strong id="data-completeness">0.0%</strong>
+                                    <div class="confidence-bar-container">
+                                        <div id="completeness-bar" class="confidence-bar" style="width: 0%; background-color: #56d364;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bedside Clinical Baseline Comparisons -->
+                        <div class="baselines-card">
+                            <h4>Clinical Scoring Comparisons</h4>
+                            <div class="baseline-scores-grid">
+                                <div class="baseline-score-box">
+                                    <span class="lbl tooltip" data-tooltip="Simplified qSOFA (SBP, Resp Rate)">Simplified qSOFA</span>
+                                    <span class="val" id="qsofa-val">— / 2</span>
+                                    <span id="qsofa-alert-badge" class="badge">Normal</span>
+                                </div>
+                                <div class="baseline-score-box">
+                                    <span class="lbl tooltip" data-tooltip="Simplified NEWS2 (HR, O2Sat, Temp, SBP, Resp)">Simplified NEWS2</span>
+                                    <span class="val" id="news2-val">— / 20</span>
+                                    <span id="news2-alert-badge" class="badge">Normal</span>
+                                </div>
+                                <div class="baseline-score-box">
+                                    <span class="lbl">Ground Truth label</span>
+                                    <span class="val" id="ground-truth">—</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Risk Trajectory Sparkline (Canvas) -->
+                    <div class="trajectory-chart-container">
+                        <h4><i class="fa-solid fa-chart-line"></i> Risk Trajectory (Previous 12 Hours)</h4>
+                        <canvas id="trajectory-canvas" width="400" height="100"></canvas>
+                    </div>
+
+                    <!-- What-If Simulation Form -->
+                    <div class="variables-simulation-container">
+                        <form id="variables-form">
+                            <!-- Demographics & Stay Info -->
+                            <div class="form-group-section">
+                                <h3><i class="fa-solid fa-id-card"></i> Demographics & Timing</h3>
+                                <div class="inputs-grid">
+                                    <div class="input-item">
+                                        <label for="Age">Age (yrs)</label>
+                                        <input type="number" step="1" id="Age" name="Age" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="Gender">Gender</label>
+                                        <select id="Gender" name="Gender" class="input-control dropdown-control">
+                                            <option value="0">Female</option>
+                                            <option value="1">Male</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="ICULOS">ICU LOS (hrs)</label>
+                                        <input type="number" step="0.1" id="ICULOS" name="ICULOS" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="HospAdmTime">Hosp→ICU (hrs)</label>
+                                        <input type="number" step="0.1" id="HospAdmTime" name="HospAdmTime" class="input-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Vital Signs -->
+                            <div class="form-group-section">
+                                <h3><i class="fa-solid fa-heart-pulse"></i> Vital Signs</h3>
+                                <div class="inputs-grid">
+                                    <div class="input-item">
+                                        <label for="HR">Heart Rate (bpm)</label>
+                                        <input type="number" step="1" id="HR" name="HR" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="O2Sat">O₂ Saturation (%)</label>
+                                        <input type="number" step="0.1" id="O2Sat" name="O2Sat" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="Temp">Temperature (°C)</label>
+                                        <input type="number" step="0.1" id="Temp" name="Temp" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="SBP">Systolic BP (mmHg)</label>
+                                        <input type="number" step="1" id="SBP" name="SBP" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="MAP">MAP (mmHg)</label>
+                                        <input type="number" step="1" id="MAP" name="MAP" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="Resp">Respiration Rate (/min)</label>
+                                        <input type="number" step="0.1" id="Resp" name="Resp" class="input-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Laboratory Values -->
+                            <div class="form-group-section">
+                                <h3><i class="fa-solid fa-vial"></i> Laboratory Values</h3>
+                                <div class="inputs-grid">
+                                    <div class="input-item">
+                                        <label for="WBC">WBC (×10⁹/L)</label>
+                                        <input type="number" step="0.1" id="WBC" name="WBC" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="Creatinine">Creatinine (mg/dL)</label>
+                                        <input type="number" step="0.01" id="Creatinine" name="Creatinine" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="Bilirubin_total">Bilirubin (mg/dL)</label>
+                                        <input type="number" step="0.1" id="Bilirubin_total" name="Bilirubin_total" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="Platelets">Platelets (×10³/µL)</label>
+                                        <input type="number" step="1" id="Platelets" name="Platelets" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="Glucose">Glucose (mg/dL)</label>
+                                        <input type="number" step="1" id="Glucose" name="Glucose" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="Lactate">Lactate (mmol/L)</label>
+                                        <input type="number" step="0.1" id="Lactate" name="Lactate" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="pH">pH</label>
+                                        <input type="number" step="0.01" id="pH" name="pH" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="PaCO2">PaCO₂ (mmHg)</label>
+                                        <input type="number" step="0.1" id="PaCO2" name="PaCO2" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="BUN">BUN (mg/dL)</label>
+                                        <input type="number" step="0.1" id="BUN" name="BUN" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="Hgb">Hemoglobin (g/dL)</label>
+                                        <input type="number" step="0.1" id="Hgb" name="Hgb" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="PTT">PTT (sec)</label>
+                                        <input type="number" step="0.1" id="PTT" name="PTT" class="input-control">
+                                    </div>
+                                    <div class="input-item">
+                                        <label for="HCO3">Bicarbonate (mEq/L)</label>
+                                        <input type="number" step="0.1" id="HCO3" name="HCO3" class="input-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 3: Right (The Context / SHAP & Actions) -->
+            <div id="col-the-context" class="card column-panel col-right">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-chart-bar"></i> Clinical Explanations & Actions</h2>
+                    <span class="badge badge-success">Online</span>
+                </div>
+                
+                <div class="card-body context-body scrollable-container">
+                    <!-- SHAP Local Feature Attributions -->
+                    <div class="shap-chart-wrapper">
+                        <h4><i class="fa-solid fa-magnifying-glass-chart"></i> Feature Attributions (SHAP Impact)</h4>
+                        <p class="shap-subtext">Shows which clinical variables are driving the model's prediction up (Red) or down (Blue/Green).</p>
+                        <div id="shap-bars-container" class="shap-bars-container">
+                            <!-- Attributions rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Active Alerts List with Deep-Dive expanders -->
+                    <div class="alerts-list-wrapper">
+                        <h4><i class="fa-solid fa-bell"></i> Active Clinical Alerts</h4>
+                        <div id="active-alerts-container" class="active-alerts-container">
+                            <!-- Alert cards rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Interactive AI Clinical Advisor Dialogue -->
+                    <div class="advisor-dialog-wrapper">
+                        <h4><i class="fa-solid fa-user-md"></i> Sepsis AI Clinical Advisor</h4>
+                        <div class="advisor-dialog-box">
+                            <div class="advisor-intro-message" id="advisor-welcome-msg">
+                                <i class="fa-solid fa-stethoscope advisor-avatar"></i>
+                                <div class="message-content">
+                                    <p>Select a patient and click <strong>Consult Sepsis Advisor</strong> below to generate a detailed transformer-based clinical explanation and recommendations.</p>
+                                </div>
+                            </div>
+                            <div class="advisor-response-output hidden" id="advisor-response-panel">
+                                <div class="output-header">
+                                    <span class="clinical-advisor-label"><i class="fa-solid fa-brain"></i> Advisor Assessment</span>
+                                    <button id="read-aloud-btn" class="text-btn tooltip" data-tooltip="Speak assessment aloud"><i class="fa-solid fa-volume-high"></i> Listen</button>
+                                </div>
+                                <div class="explanation-text markdown-render" id="explanation-text-box">
+                                    <!-- LLM text loads here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="consultation-actions">
+                            <button id="consult-advisor-btn" class="primary-btn ripple" disabled><i class="fa-solid fa-brain"></i> Consult Sepsis Advisor</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action Ordering Buttons -->
+                    <div class="quick-actions-wrapper">
+                        <h4><i class="fa-solid fa-stethoscope"></i> Immediate Clinical Protocols</h4>
+                        <div class="quick-actions-grid">
+                            <button id="btn-order-cultures" class="action-btn order-btn" disabled><i class="fa-solid fa-vial-virus"></i> Order Blood Cultures</button>
+                            <button id="btn-order-fluids" class="action-btn order-btn" disabled><i class="fa-solid fa-truck-droplet"></i> Initiate IV Fluids</button>
+                            <button id="btn-order-antibiotics" class="action-btn order-btn" disabled><i class="fa-solid fa-capsules"></i> Order Empiric Antibiotics</button>
+                            <button id="btn-dismiss-alert" class="action-btn dismiss-btn" disabled><i class="fa-solid fa-bell-slash"></i> Dismiss Alert</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>&copy; 2026 ICU Decision Support System | Powered by LightGBM & Transformers | Language: English (US)</p>
+            <div class="connection-status">
+                <span class="status-indicator connected" id="ws-indicator"></span>
+                <span id="ws-status-text">Connected to Local WebSocket</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- About / Limitations Modal -->
+    <div id="about-modal" class="modal-overlay hidden" role="dialog" aria-modal="true"
+         aria-labelledby="about-modal-title">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 id="about-modal-title"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Project Information &amp; Study Disclosures</h2>
+                <button id="about-modal-close" class="close-btn" aria-label="Close study information">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h3>1. Purpose & Limitation Notice</h3>
+                <p class="text-warning"><i class="fa-solid fa-triangle-exclamation"></i> <strong>NOTICE:</strong> This is a retrospective research prototype and has not been cleared for live clinical diagnostic deployment. All clinical decisions must be verified by the attending physician.</p>
+                <p>This decision support interface is designed for validation purposes, trained and evaluated on the <strong>PhysioNet/CinC 2019 Sepsis Challenge</strong> dataset (Combined Sets A &amp; B). Current session: <strong id="modal-dataset-mode">loading…</strong></p>
+                
+                <h3>2. Implemented Baseline Citations</h3>
+                <ul>
+                    <li><strong>Simplified qSOFA</strong>: Computes points based on respiratory rate (\(\ge 22\)) and systolic blood pressure (\(\le 100\)). Glasgow Coma Scale (altered mental status) is omitted due to feature missingness. *Reference: Seymour et al. 2016 (JAMA)*.</li>
+                    <li><strong>Simplified NEWS2</strong>: Computes National Early Warning Score based on heart rate, oxygen saturation, temperature, systolic BP, and respiration rate. Altered consciousness (AVPU) and supplemental oxygen status are omitted. *Reference: Royal College of Physicians 2017 NEWS2 guidelines*.</li>
+                </ul>
+
+                <h3>3. Alarm Fatigue Suppression</h3>
+                <p>ICU alarm fatigue is mitigated by suppressing transient risk spikes (temporary drops or noise). Alarms are only triggered if the Sepsis Risk (≥ 0.3) is sustained for <strong>2 consecutive hours</strong>, or is accompanied by severe organ dysfunction indicators (Lactate &gt; 2.0 mmol/L <em>and</em> O₂ Saturation &lt; 90%).</p>
+                
+                <h3>4. Scientific Metrics & AUROC Comparison</h3>
+                <div class="metrics-comparison-table-wrapper">
+                    <table class="metrics-table">
+                        <thead>
+                            <tr>
+                                <th>Predictor</th>
+                                <th>AUROC (95% CI)</th>
+                                <th>AUPRC (95% CI)</th>
+                                <th>Brier Score</th>
+                                <th>AUROC Difference p-value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-metrics-table-body">
+                            <!-- Population metrics loaded dynamically from /api/metrics -->
+                            <tr><td colspan="5">Loading academic metrics...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>5. Subgroup Power Disclosures</h3>
+                <p>Subgroup metrics are audited for sample size. Any group with fewer than 20 positive sepsis cases is flagged as underpowered to ensure statistical integrity.</p>
+                <div id="modal-subgroup-grid" class="subgroup-grid">
+                    <!-- Subgroup boxes loaded dynamically -->
+                </div>
+
+                <h3>6. Alarm Fatigue Suppression Evidence</h3>
+                <p>Retrospective replay of every patient-hour through the suppression logic, comparing raw threshold alarms against suppressed alarms.</p>
+                <div id="modal-alarm-evidence" class="evidence-grid">
+                    <button id="run-alarm-replay-btn" class="outline-btn compact-btn">
+                        <i class="fa-solid fa-play"></i> Run alarm-suppression replay
+                    </button>
+                </div>
+
+                <h3>7. Label Leakage Audit</h3>
+                <p>SOFA-component features are checked for target leakage by comparing their correlation with the sepsis label at the current hour (t=0) against a 6-hour lookahead (t−6). A large drop implies the feature mostly reflects the label rather than predicting it.</p>
+                <div class="metrics-comparison-table-wrapper">
+                    <table class="metrics-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Corr @ t=0</th>
+                                <th>Corr @ t−6</th>
+                                <th>Δ</th>
+                                <th>Risk</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-leakage-table-body">
+                            <tr><td colspan="5">Loading leakage audit…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>8. Inference Latency</h3>
+                <div id="modal-latency-grid" class="evidence-grid">
+                    <span class="evidence-loading">Loading latency statistics…</span>
+                </div>
+
+                <h3>9. Usability Study Session</h3>
+                <p>This session's anonymized interaction events can be exported for analysis. No patient-identifying or participant-identifying fields are recorded.</p>
+                <div class="session-export-row">
+                    <span class="session-id-chip">Session: <strong id="modal-session-id">—</strong></span>
+                    <button id="export-session-btn" class="outline-btn compact-btn">
+                        <i class="fa-solid fa-download"></i> Export this session (JSON)
+                    </button>
+                    <button id="export-all-btn" class="outline-btn compact-btn">
+                        <i class="fa-solid fa-download"></i> Export all sessions
+                    </button>
+                </div>
+
+                <h3>10. Keyboard Shortcuts</h3>
+                <div class="shortcuts-grid">
+                    <div class="shortcut-row"><kbd>/</kbd><span>Focus patient filter</span></div>
+                    <div class="shortcut-row"><kbd>Space</kbd><span>Start / pause replay</span></div>
+                    <div class="shortcut-row"><kbd>←</kbd> <kbd>→</kbd><span>Step timeline back / forward</span></div>
+                    <div class="shortcut-row"><kbd>L</kbd><span>Toggle 3-column / 1-column layout</span></div>
+                    <div class="shortcut-row"><kbd>M</kbd><span>Mute / unmute voice readback</span></div>
+                    <div class="shortcut-row"><kbd>?</kbd><span>Open this study info panel</span></div>
+                    <div class="shortcut-row"><kbd>Esc</kbd><span>Close any open dialog</span></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="about-modal-ok" class="primary-btn compact-btn">Acknowledge & Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Action Orders Confirmation Modal -->
+    <div id="action-modal" class="modal-overlay hidden" role="dialog" aria-modal="true"
+         aria-labelledby="action-modal-title">
+        <div class="modal-card action-modal-card">
+            <div class="modal-header">
+                <h2 id="action-modal-title">Confirm Action</h2>
+                <button id="action-modal-close" class="close-btn" aria-label="Close dialog">&times;</button>
+            </div>
+            <div class="modal-body" id="action-modal-body">
+                <!-- Action body dynamic -->
+            </div>
+            <div class="modal-footer" id="action-modal-footer">
+                <!-- Footer buttons -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notifications (replaces blocking window.alert) -->
+    <div id="toast-container" class="toast-container" role="region" aria-label="Notifications" aria-live="polite"></div>
+
+    <!-- Voice command feedback: shows what was heard and what it resolved to -->
+    <div id="voice-hud" class="voice-hud hidden" role="status" aria-live="polite">
+        <div class="voice-hud-pulse"><i class="fa-solid fa-microphone" aria-hidden="true"></i></div>
+        <div class="voice-hud-body">
+            <span class="voice-hud-label">Listening…</span>
+            <span class="voice-hud-transcript" id="voice-hud-transcript"></span>
+        </div>
+        <button id="voice-hud-close" class="voice-hud-close" aria-label="Stop listening">&times;</button>
+    </div>
+
+    <!-- Voice command reference -->
+    <div id="voice-help-modal" class="modal-overlay hidden" role="dialog" aria-modal="true"
+         aria-labelledby="voice-help-title">
+        <div class="modal-card action-modal-card">
+            <div class="modal-header">
+                <h2 id="voice-help-title"><i class="fa-solid fa-microphone" aria-hidden="true"></i> Voice Commands</h2>
+                <button id="voice-help-close" class="close-btn" aria-label="Close voice command list">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="section-desc">Press <kbd>V</kbd> or click the microphone to start listening. Say <strong>“help”</strong> at any time to reopen this list.</p>
+                <div class="voice-cmd-grid" id="voice-cmd-grid"></div>
+                <p class="section-desc" style="margin-top:0.8rem;">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Ordering and dismissal commands open the usual confirmation dialog —
+                    voice never places an order by itself. Say <strong>“confirm”</strong> to accept
+                    or <strong>“cancel”</strong> to dismiss.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="voice-help-ok" class="primary-btn compact-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script src="client.js?v=18"></script>
+    <!-- Voice command layer. Loaded after client.js so it reuses its element
+         references, toasts and usability logging. -->
+    <script src="voice.js?v=18"></script>
+    <!-- Spoken readback and the remaining controls, so the dashboard can be driven
+         by voice alone. Loaded after voice.js because it extends its command table. -->
+    <script src="voice_nav.js?v=18"></script>
+</body>
+</html>

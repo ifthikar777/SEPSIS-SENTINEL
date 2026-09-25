@@ -1,0 +1,319 @@
+{
+    "metadata": {
+        "dataset_mode": "full",
+        "sample_label": "Full PhysioNet/CinC 2019 corpus (training sets A+B)",
+        "source": "C:\\Users\\kprat\\OneDrive\\Desktop\\SepsisGuard\\SepsisGuard-main\\data\\physionet2019",
+        "set_directories": [
+            "C:\\Users\\kprat\\OneDrive\\Desktop\\SepsisGuard\\SepsisGuard-main\\data\\physionet2019\\training_setA",
+            "C:\\Users\\kprat\\OneDrive\\Desktop\\SepsisGuard\\SepsisGuard-main\\data\\physionet2019\\training_setB"
+        ],
+        "total_rows": 1552210,
+        "total_patients": 40336,
+        "ever_sepsis_patients": 2932,
+        "warning": "Unpaired CI width compared against paired CI width is invalid. Paired bootstrap active.",
+        "simplified_qsofa_threshold": "Simplified qSOFA >= 2",
+        "simplified_qsofa_citation": "Seymour et al. 2016 (JAMA)",
+        "simplified_news2_threshold": "Simplified NEWS2 >= 5",
+        "simplified_news2_citation": "Royal College of Physicians 2017 NEWS2",
+        "primary_seed": 42,
+        "split_seed": 42,
+        "model_seed": 42,
+        "train_size": 1240596,
+        "test_size": 311614,
+        "multi_seed_stability": {
+            "seeds": [
+                42,
+                100,
+                2026,
+                999,
+                123
+            ],
+            "n_seeds": 5,
+            "auroc_mean": 0.8209782806211591,
+            "auroc_std": 0.0059677496335298515,
+            "auprc_mean": 0.09834781001133351,
+            "auprc_std": 0.002256827056685098,
+            "brier_mean": 0.016962874929727614,
+            "brier_std": 0.00013369220180595504,
+            "sensitivity_0.3_mean": 0.041515258145290425,
+            "sensitivity_0.3_std": 0.004870083953048142,
+            "specificity_0.3_mean": 0.9969501883762668,
+            "specificity_0.3_std": 0.0005007214765035212
+        }
+    },
+    "model_performance": {
+        "auroc": 0.8138438144741827,
+        "auroc_95_ci": [
+            0.8080783117436738,
+            0.8195220897688081
+        ],
+        "auprc": 0.09908787951879283,
+        "auprc_95_ci": [
+            0.0937976889119009,
+            0.10468198230751849
+        ],
+        "brier_score": 0.0171368445622242,
+        "brier_95_ci": [
+            0.016743807859380722,
+            0.017552316225576625
+        ],
+        "sensitivity_at_alert_threshold": 0.8303619665045922,
+        "specificity_at_alert_threshold": 0.6142141599223684
+    },
+    "baseline_comparison": {
+        "qsofa": {
+            "auroc": 0.5792314427552563,
+            "auroc_95_ci": [
+                0.5724183148940702,
+                0.5859339329675404
+            ],
+            "auprc": 0.02242022641805433,
+            "auroc_difference_raw_p_value": 0.0,
+            "auroc_difference_adjusted_p_value": 0.0,
+            "auroc_difference_95_ci": [
+                0.22679691445389397,
+                0.24153203956872868
+            ]
+        },
+        "news2": {
+            "auroc": 0.6242701054922655,
+            "auroc_95_ci": [
+                0.6166768405067051,
+                0.6315906707274822
+            ],
+            "auprc": 0.028909188374065174,
+            "auroc_difference_raw_p_value": 0.0,
+            "auroc_difference_adjusted_p_value": 0.0,
+            "auroc_difference_95_ci": [
+                0.18169755526263978,
+                0.19758436213078004
+            ]
+        }
+    },
+    "decision_thresholds": {
+        "alert_threshold": 0.010900849054770389,
+        "high_risk_threshold": 0.04158207816165758,
+        "youden_j_threshold": 0.016172912428049812,
+        "target_sensitivity_alert": 0.85,
+        "target_sensitivity_high": 0.5,
+        "selected_on": "validation split held out from training patients",
+        "validation_patients": 6454,
+        "validation_rows": 248648
+    },
+    "operating_points": {
+        "alert": {
+            "threshold": 0.010900849054770389,
+            "sensitivity": 0.8303619665045922,
+            "specificity": 0.6142141599223684,
+            "ppv": 0.03758405673065167,
+            "npv": 0.995013999968242,
+            "alert_rate": 0.39370824160660306
+        },
+        "high_risk": {
+            "threshold": 0.04158207816165758,
+            "sensitivity": 0.47559877543670087,
+            "specificity": 0.9138112990547635,
+            "ppv": 0.09100620261888352,
+            "npv": 0.9896954641641366,
+            "alert_rate": 0.09312803660939496
+        },
+        "youden_j": {
+            "threshold": 0.016172912428049812,
+            "sensitivity": 0.7201512695840087,
+            "specificity": 0.7476156713857695,
+            "ppv": 0.049222096400965,
+            "npv": 0.9932543299908843,
+            "alert_rate": 0.2607199933250752
+        },
+        "legacy_0.30": {
+            "threshold": 0.3,
+            "sensitivity": 0.05060327750765352,
+            "specificity": 0.9962589157063462,
+            "ppv": 0.197054698457223,
+            "npv": 0.9830038557262047,
+            "alert_rate": 0.004576174369572613
+        }
+    },
+    "calibration": {
+        "n_bins": 10,
+        "binning": "equal-count (quantile) over predicted probability",
+        "bins": [
+            {
+                "count": 31162,
+                "mean_predicted": 0.002579861467820598,
+                "observed_rate": 0.000898530261215583,
+                "score_min": 0.0011777166866214588,
+                "score_max": 0.003266680623377164
+            },
+            {
+                "count": 31162,
+                "mean_predicted": 0.0038096142643376336,
+                "observed_rate": 0.0019575123547910917,
+                "score_min": 0.003266680623377164,
+                "score_max": 0.004348982181887256
+            },
+            {
+                "count": 31162,
+                "mean_predicted": 0.004874225298809402,
+                "observed_rate": 0.004139657274886079,
+                "score_min": 0.004349183351880089,
+                "score_max": 0.005390325928154559
+            },
+            {
+                "count": 31162,
+                "mean_predicted": 0.006007809947289084,
+                "observed_rate": 0.005391181567293499,
+                "score_min": 0.005390339948705146,
+                "score_max": 0.006682038989867899
+            },
+            {
+                "count": 31161,
+                "mean_predicted": 0.007511623270113746,
+                "observed_rate": 0.007220564166746895,
+                "score_min": 0.006682100235994156,
+                "score_max": 0.008402813990301114
+            },
+            {
+                "count": 31161,
+                "mean_predicted": 0.009478501657500533,
+                "observed_rate": 0.009755784474182471,
+                "score_min": 0.008403045202776762,
+                "score_max": 0.010713482453705401
+            },
+            {
+                "count": 31161,
+                "mean_predicted": 0.012394417024272688,
+                "observed_rate": 0.013831391803857385,
+                "score_min": 0.010713499919088187,
+                "score_max": 0.014286106509571555
+            },
+            {
+                "count": 31161,
+                "mean_predicted": 0.01687764849744471,
+                "observed_rate": 0.018195821700202175,
+                "score_min": 0.014286165153184212,
+                "score_max": 0.020165909856299062
+            },
+            {
+                "count": 31161,
+                "mean_predicted": 0.027173812789832483,
+                "observed_rate": 0.028946439459580885,
+                "score_min": 0.020166758898441963,
+                "score_max": 0.03862447116463622
+            },
+            {
+                "count": 31161,
+                "mean_predicted": 0.11032884174471001,
+                "observed_rate": 0.08786624306023555,
+                "score_min": 0.038625758361848984,
+                "score_max": 0.9544688984006269
+            }
+        ]
+    },
+    "external_validation": {
+        "train_SetA_test_SetB": {
+            "train_set": "Set A",
+            "test_set": "Set B",
+            "train_patients": 20336,
+            "test_patients": 20000,
+            "train_rows": 790215,
+            "test_rows": 761995,
+            "test_positive_rows": 10780,
+            "auroc": 0.7466143200519796,
+            "auprc": 0.06526250523354364,
+            "brier_score": 0.014248610799651638
+        },
+        "train_SetB_test_SetA": {
+            "train_set": "Set B",
+            "test_set": "Set A",
+            "train_patients": 20000,
+            "test_patients": 20336,
+            "train_rows": 761995,
+            "test_rows": 790215,
+            "test_positive_rows": 17136,
+            "auroc": 0.7490271604257286,
+            "auprc": 0.07408662368455292,
+            "brier_score": 0.02271293750658363
+        }
+    },
+    "subgroups": {
+        "Age_Under_65": {
+            "N": 159716,
+            "positive_cases": 2861,
+            "underpowered": false,
+            "auroc": 0.8144180651775328,
+            "auprc": 0.09792919200554094,
+            "auroc_95_ci": [
+                0.8068307136622559,
+                0.8232291663886602
+            ],
+            "raw_p_value_vs_qsofa": 0.0,
+            "adjusted_p_value_vs_qsofa": 0.0
+        },
+        "Age_Over_Equal_65": {
+            "N": 151898,
+            "positive_cases": 2692,
+            "underpowered": false,
+            "auroc": 0.813181707813279,
+            "auprc": 0.10216681472613255,
+            "auroc_95_ci": [
+                0.8061486203317022,
+                0.8214762126037786
+            ],
+            "raw_p_value_vs_qsofa": 0.0,
+            "adjusted_p_value_vs_qsofa": 0.0
+        },
+        "Sex_Female": {
+            "N": 137052,
+            "positive_cases": 2226,
+            "underpowered": false,
+            "auroc": 0.8184604168330152,
+            "auprc": 0.10519004683909104,
+            "auroc_95_ci": [
+                0.8096940434416446,
+                0.8268236139962971
+            ],
+            "raw_p_value_vs_qsofa": 0.0,
+            "adjusted_p_value_vs_qsofa": 0.0
+        },
+        "Sex_Male": {
+            "N": 174562,
+            "positive_cases": 3327,
+            "underpowered": false,
+            "auroc": 0.8100086353518936,
+            "auprc": 0.09620354663169758,
+            "auroc_95_ci": [
+                0.8023400105171037,
+                0.8166776514212775
+            ],
+            "raw_p_value_vs_qsofa": 0.0,
+            "adjusted_p_value_vs_qsofa": 0.0
+        }
+    },
+    "xai_verification": {
+        "shap_top_5": [
+            "ICULOS",
+            "HospAdmTime",
+            "Temp",
+            "HR",
+            "WBC"
+        ],
+        "cohens_d_top_5": [
+            "Lactate",
+            "O2Sat",
+            "Creatinine",
+            "Bilirubin_total",
+            "WBC"
+        ],
+        "plausibility_agreement": [
+            "WBC"
+        ],
+        "plausibility_disagreement": [
+            "Lactate",
+            "O2Sat",
+            "Creatinine",
+            "Bilirubin_total"
+        ],
+        "shap_stability_score": 0.8021606254442075
+    }
+}

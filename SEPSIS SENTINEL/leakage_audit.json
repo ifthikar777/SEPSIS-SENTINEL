@@ -1,0 +1,44 @@
+{
+    "Platelets": {
+        "correlation_t0": -0.33923910702389326,
+        "correlation_t_minus_6": -0.24769334613183566,
+        "correlation_difference": 0.0915457608920576,
+        "leakage_risk_level": "Medium",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "Bilirubin_total": {
+        "correlation_t0": 0.5315138296626398,
+        "correlation_t_minus_6": 0.4076979165863079,
+        "correlation_difference": 0.12381591307633194,
+        "leakage_risk_level": "Medium",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "Creatinine": {
+        "correlation_t0": 0.5391841322015254,
+        "correlation_t_minus_6": 0.43264128627650306,
+        "correlation_difference": 0.10654284592502233,
+        "leakage_risk_level": "Medium",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "MAP": {
+        "correlation_t0": -0.348828764487037,
+        "correlation_t_minus_6": -0.25931289955186243,
+        "correlation_difference": 0.08951586493517455,
+        "leakage_risk_level": "Medium",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "Resp": {
+        "correlation_t0": 0.41579557124415767,
+        "correlation_t_minus_6": 0.3059924612543204,
+        "correlation_difference": 0.10980310998983728,
+        "leakage_risk_level": "Medium",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "O2Sat": {
+        "correlation_t0": -0.5553572559101269,
+        "correlation_t_minus_6": -0.4183269425782587,
+        "correlation_difference": 0.13703031333186816,
+        "leakage_risk_level": "Medium",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    }
+}

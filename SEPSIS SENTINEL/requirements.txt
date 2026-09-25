@@ -1,0 +1,34 @@
+# SepsisGuard runtime dependencies.
+#
+# Pinned to exact versions so an air-gapped install is reproducible: the wheelhouse
+# built on a networked machine must match what the offline machine resolves, and
+# ">=" would let the two drift apart.
+#
+# Air-gapped install (see README):
+#   pip download -r requirements.txt -d wheelhouse/          # on a networked machine
+#   pip install --no-index --find-links=wheelhouse -r requirements.txt   # offline
+#
+# There is deliberately no LLM client here. The clinical advisor is generated
+# locally from the model's own SHAP attributions and makes no network calls.
+
+# Web server and API
+fastapi==0.139.2
+uvicorn==0.51.0
+websockets==16.1.1
+
+# Model and numerics
+lightgbm==4.7.0
+pandas==3.0.3
+numpy==2.5.1
+scipy==1.18.0
+scikit-learn==1.9.0
+pydantic==2.13.4
+
+# Data loading: openpyxl reads the bundled Excel sample, pyarrow backs the
+# Parquet cache used by the full PhysioNet corpus.
+openpyxl==3.1.5
+pyarrow==25.0.0
+
+# Offline speech recognition. The model itself is fetched separately with
+# scripts/fetch_voice_model.py and is not a pip dependency.
+vosk==0.3.45

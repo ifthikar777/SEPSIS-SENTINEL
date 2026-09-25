@@ -1,0 +1,44 @@
+{
+    "Platelets": {
+        "correlation_t0": -0.012017127590369518,
+        "correlation_t_minus_6": -0.007928293408792409,
+        "correlation_difference": 0.004088834181577109,
+        "leakage_risk_level": "Low",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "Bilirubin_total": {
+        "correlation_t0": 0.047631366291117694,
+        "correlation_t_minus_6": 0.025655994338228547,
+        "correlation_difference": 0.021975371952889147,
+        "leakage_risk_level": "Low",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "Creatinine": {
+        "correlation_t0": 0.028532530972949742,
+        "correlation_t_minus_6": 0.021201031005022825,
+        "correlation_difference": 0.0073314999679269174,
+        "leakage_risk_level": "Low",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "MAP": {
+        "correlation_t0": -0.018795530634345782,
+        "correlation_t_minus_6": -0.010708894401068236,
+        "correlation_difference": 0.008086636233277546,
+        "leakage_risk_level": "Low",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "Resp": {
+        "correlation_t0": 0.04630433192981452,
+        "correlation_t_minus_6": 0.04565923150049594,
+        "correlation_difference": 0.0006451004293185833,
+        "leakage_risk_level": "Low",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    },
+    "O2Sat": {
+        "correlation_t0": -0.009338442544533504,
+        "correlation_t_minus_6": -0.009771101596027567,
+        "correlation_difference": -0.00043265905149406265,
+        "leakage_risk_level": "Low",
+        "action_taken": "Retained with raw missingness flags. Imputed features lagged causally in replay engine."
+    }
+}

@@ -1,0 +1,655 @@
+/* ============================================================================
+   SepsisGuard — "Vitals" theme
+   ----------------------------------------------------------------------------
+   A visual layer loaded AFTER style.css. It restyles surfaces, type and colour
+   only; layout rules (grid/flex structure), element IDs and class names are left
+   untouched so client.js, the 3-column/1-column study toggle, ARIA roles and
+   keyboard handling all keep working exactly as before.
+
+   Clinical semantics are preserved: risk red / warning amber / safe green keep
+   their meaning. The accent palette is used for neutral chrome only.
+   ========================================================================== */
+
+:root {
+    --bg: #0b0b0e;
+    --bg-elev: #141417;
+    --surface: #191a1e;
+    --surface-2: #202126;
+    --surface-3: #26272d;
+
+    --line: rgba(255, 255, 255, 0.07);
+    --line-strong: rgba(255, 255, 255, 0.12);
+
+    --text: #f2f3f5;
+    --text-dim: #9a9ba3;
+    --text-faint: #6b6c75;
+
+    --accent: #ff6b2c;      /* primary — amber/orange */
+    --accent-soft: #ff8c42;
+    --lime: #c2f04a;        /* secondary — lime */
+    --pink: #ff4d8d;        /* tertiary */
+    --cyan: #4dd6ff;
+
+    --danger: #ff5c5c;
+    --warn: #ffb020;
+    --ok: #7ee081;
+
+    --r-lg: 26px;
+    --r-md: 18px;
+    --r-sm: 12px;
+    --r-pill: 999px;
+}
+
+/* ---------- Page shell ---------- */
+body {
+    background: var(--bg);
+    color: var(--text);
+    letter-spacing: 0.1px;
+}
+
+.glass-bg-layer {
+    background:
+        radial-gradient(900px 500px at 12% -5%, rgba(255, 107, 44, 0.10), transparent 60%),
+        radial-gradient(800px 500px at 88% 110%, rgba(194, 240, 74, 0.06), transparent 60%),
+        var(--bg);
+}
+
+.app-container {
+    padding: 0.75rem 1.1rem 1.1rem;
+    gap: 0.85rem;
+}
+
+/* ---------- Top chrome ---------- */
+.academic-banners-bar,
+.app-header {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: none;
+}
+
+.academic-banners-bar {
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.2rem;
+}
+
+.app-header {
+    padding: 0.7rem 1.15rem;
+}
+
+.header-logo h1 {
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--text);
+}
+
+.logo-subtitle { color: var(--text-faint); }
+
+.pulse-icon { color: var(--accent); }
+
+.academic-badge {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    color: var(--text-dim);
+    padding: 0.35rem 0.8rem;
+    font-size: 0.72rem;
+}
+
+.academic-badge i { color: var(--accent); }
+.academic-badge.badge-full-corpus { border-color: rgba(194, 240, 74, 0.35); color: var(--lime); }
+.academic-badge.badge-full-corpus i { color: var(--lime); }
+
+.badge-replay {
+    background: rgba(255, 107, 44, 0.12);
+    border-color: rgba(255, 107, 44, 0.4);
+    color: var(--accent-soft);
+}
+
+.toggle-switch-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    color: var(--text);
+    padding: 0.4rem 0.9rem;
+    font-size: 0.75rem;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.toggle-switch-btn:hover { background: var(--surface-3); border-color: var(--line-strong); }
+.toggle-switch-btn.baseline-layout { border-color: rgba(194, 240, 74, 0.4); color: var(--lime); }
+
+/* ---------- Cards ---------- */
+.card,
+.column-panel,
+.playback-control-panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset;
+}
+
+.card-header {
+    border-bottom: 1px solid var(--line);
+    padding: 0.95rem 1.15rem;
+}
+
+.card-header h2 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--text);
+}
+
+.card-header h2 i { color: var(--accent); }
+
+.card-body { padding: 1.05rem 1.15rem; }
+
+.badge {
+    background: var(--surface-3);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    color: var(--text-dim);
+    font-size: 0.68rem;
+    padding: 0.24rem 0.66rem;
+}
+
+.badge-info    { background: rgba(77, 214, 255, 0.12); border-color: rgba(77, 214, 255, 0.3); color: var(--cyan); }
+.badge-success { background: rgba(126, 224, 129, 0.12); border-color: rgba(126, 224, 129, 0.3); color: var(--ok); }
+
+h3, h4 { color: var(--text); letter-spacing: -0.2px; }
+h4 i { color: var(--accent); }
+
+/* ---------- Alert banner ---------- */
+.alert-status-banner {
+    border-radius: var(--r-md);
+    border: 1px solid var(--line);
+    padding: 0.8rem 1rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.alert-normal   { background: rgba(126, 224, 129, 0.08); border-color: rgba(126, 224, 129, 0.28); color: var(--ok); }
+.alert-warning  { background: rgba(255, 176, 32, 0.10);  border-color: rgba(255, 176, 32, 0.35);  color: var(--warn); }
+.alert-critical { background: rgba(255, 92, 92, 0.12);   border-color: rgba(255, 92, 92, 0.42);   color: var(--danger); }
+.alert-suppressed { background: var(--surface-2); border-color: var(--line); color: var(--text-dim); }
+
+/* ---------- Patient identity ---------- */
+.patient-id-card {
+    background: linear-gradient(145deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 1rem;
+}
+
+.patient-label-title { color: var(--text-faint); letter-spacing: 1.4px; font-size: 0.6rem; }
+#patient-id-display { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
+.demog-item .lbl { color: var(--text-faint); }
+.demog-item strong { color: var(--text); }
+
+/* ---------- Vitals tiles: big number, quiet label ---------- */
+.vital-tile {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 0.8rem 0.7rem;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.vital-tile:hover { transform: translateY(-2px); border-color: var(--line-strong); }
+
+.tile-title { color: var(--text-faint); font-size: 0.64rem; letter-spacing: 0.5px; text-transform: uppercase; }
+.tile-val   { color: var(--text); font-size: 1.32rem; font-weight: 700; letter-spacing: -0.6px; }
+.tile-unit  { color: var(--text-faint); font-size: 0.62rem; }
+
+.vital-tile.abnormal-high { background: rgba(255, 92, 92, 0.10); border-color: rgba(255, 92, 92, 0.35); }
+.vital-tile.abnormal-high .tile-val { color: var(--danger); }
+.vital-tile.abnormal-low  { background: rgba(77, 214, 255, 0.10); border-color: rgba(77, 214, 255, 0.35); }
+.vital-tile.abnormal-low .tile-val { color: var(--cyan); }
+
+/* ---------- Timeline ---------- */
+.timeline-container {
+    background: var(--bg-elev);
+    border-top: 1px solid var(--line);
+    border-radius: 0 0 var(--r-lg) var(--r-lg);
+    padding: 1rem 1.15rem;
+}
+
+.slider-control {
+    accent-color: var(--accent);
+    background: var(--surface-3);
+    border-radius: var(--r-pill);
+}
+
+.slider-label, .timeline-hint { color: var(--text-faint); }
+#current-hour-display {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    padding: 0.2rem 0.7rem;
+    color: var(--accent-soft);
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+/* ---------- Risk gauge ---------- */
+.gauge-card, .baselines-card {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 1rem;
+}
+
+.gauge-bg { stroke: var(--surface-3); }
+#risk-percentage { font-size: 2.1rem; font-weight: 700; letter-spacing: -1.2px; color: var(--text); }
+.risk-label { color: var(--text-faint); font-size: 0.6rem; letter-spacing: 1.2px; text-transform: uppercase; }
+
+.risk-category-label { font-weight: 700; letter-spacing: 0.3px; }
+
+.confidence-bar-container {
+    background: var(--surface-3);
+    border-radius: var(--r-pill);
+    height: 6px;
+    overflow: hidden;
+}
+
+.confidence-bar {
+    background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+    border-radius: var(--r-pill);
+}
+
+.model-confidence-box .lbl { color: var(--text-faint); font-size: 0.7rem; }
+.model-confidence-box strong { color: var(--text); }
+
+/* ---------- Baseline score boxes ---------- */
+.baseline-score-box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    padding: 0.7rem;
+}
+
+.baseline-score-box .lbl { color: var(--text-faint); font-size: 0.66rem; }
+.baseline-score-box .val { color: var(--text); font-size: 1.1rem; font-weight: 700; letter-spacing: -0.4px; }
+
+/* ---------- Trajectory ---------- */
+.trajectory-chart-container {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 1rem;
+}
+
+/* ---------- Form inputs ---------- */
+.form-group-section { border-top: 1px solid var(--line); }
+.form-group-section h3 { font-size: 0.8rem; color: var(--text-dim); }
+.input-item label { color: var(--text-faint); font-size: 0.68rem; }
+
+.input-control, .dropdown-control {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    color: var(--text);
+    padding: 0.5rem 0.65rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-control:focus, .dropdown-control:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255, 107, 44, 0.18);
+}
+
+.patient-search-input {
+    background: var(--surface-2);
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+}
+
+.patient-search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255, 107, 44, 0.18);
+}
+
+/* ---------- SHAP bars ---------- */
+.shap-row { border-bottom: 1px solid var(--line); }
+.shap-feat-name { color: var(--text-dim); font-size: 0.72rem; }
+.shap-bar-track { background: var(--surface-3); border-radius: var(--r-pill); }
+
+/* Direction stays legible: pushing risk up reads warm, pulling it down reads cool. */
+.shap-bar.positive { background: linear-gradient(90deg, var(--accent), var(--pink)); border-radius: var(--r-pill); }
+.shap-bar.negative { background: linear-gradient(90deg, var(--cyan), var(--lime)); border-radius: var(--r-pill); }
+.shap-feat-val { color: var(--text-faint); font-size: 0.68rem; font-variant-numeric: tabular-nums; }
+
+/* ---------- Alert cards ---------- */
+.alert-item-card {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+}
+
+.alert-item-card.critical { border-color: rgba(255, 92, 92, 0.4); background: rgba(255, 92, 92, 0.07); }
+.alert-item-card.warning  { border-color: rgba(255, 176, 32, 0.4); background: rgba(255, 176, 32, 0.06); }
+
+/* ---------- Advisor ---------- */
+.advisor-dialog-box {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+}
+
+.advisor-avatar { color: var(--accent); }
+.clinical-advisor-label { color: var(--lime); }
+.explanation-text { color: var(--text-dim); line-height: 1.65; }
+
+/* ---------- Buttons ---------- */
+.primary-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+    border: none;
+    border-radius: var(--r-pill);
+    color: #14100c;
+    font-weight: 700;
+    padding: 0.62rem 1.15rem;
+    transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.primary-btn:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+.primary-btn:disabled { background: var(--surface-3); color: var(--text-faint); }
+
+.outline-btn, .text-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    color: var(--text-dim);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.outline-btn:hover, .text-btn:hover { background: var(--surface-3); color: var(--text); border-color: var(--line-strong); }
+
+.action-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    color: var(--text);
+    padding: 0.7rem 0.8rem;
+    font-size: 0.76rem;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.action-btn:hover:not(:disabled) { background: var(--surface-3); border-color: var(--line-strong); transform: translateY(-1px); }
+.action-btn:disabled { opacity: 0.45; }
+.action-btn.dismiss-btn:hover:not(:disabled) { border-color: rgba(255, 92, 92, 0.45); color: var(--danger); }
+
+.control-btn {
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+}
+
+.play-btn:not(:disabled) { background: linear-gradient(135deg, var(--lime), #9fd42f); color: #12160a; border: none; font-weight: 700; }
+.pause-btn { background: linear-gradient(135deg, var(--accent), var(--accent-soft)); color: #14100c; border: none; font-weight: 700; }
+
+.icon-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--text-dim);
+    width: 34px; height: 34px;
+}
+
+.icon-btn:hover { background: var(--surface-3); color: var(--text); }
+
+/* Voice readback control — was carrying the old blue accent */
+.tts-master-control {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+}
+
+.tts-master-control .icon-btn { background: transparent; border: none; color: var(--lime); }
+.tts-status-text { color: var(--text-dim); font-size: 0.7rem; }
+.tts-master-control.muted { border-color: rgba(255, 92, 92, 0.35); }
+.tts-master-control.muted .icon-btn { color: var(--danger); }
+.tts-master-control.muted .tts-status-text { color: var(--danger); }
+
+/* ---------- Playback panel ----------
+   .app-container is a fixed-height flex column. This panel defaults to
+   flex-shrink: 1, so once the columns need more room than the viewport has, the
+   panel is the thing that gets compressed — it was collapsing to ~21px against a
+   71px content height and, with overflow hidden, the controls vanished entirely.
+   Pinning it stops the grid from stealing its space. */
+.playback-control-panel {
+    flex: 0 0 auto;
+    min-height: fit-content;
+    overflow: visible;
+}
+
+.playback-title { color: var(--text); font-weight: 600; }
+.playback-title i { color: var(--accent); }
+.latency-indicator { color: var(--text-faint); font-size: 0.73rem; }
+.latency-indicator i { color: var(--lime); }
+#avg-latency-display { color: var(--lime); font-weight: 700; }
+
+/* ---------- Modals ---------- */
+.modal-overlay { background: rgba(6, 6, 8, 0.78); backdrop-filter: blur(6px); }
+
+.modal-card {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-lg);
+}
+
+.modal-header, .modal-footer { border-color: var(--line); }
+.modal-header h2 { font-size: 1rem; }
+.modal-header h2 i { color: var(--accent); }
+.close-btn { color: var(--text-faint); }
+.close-btn:hover { color: var(--text); }
+
+.metrics-table th {
+    background: var(--surface-2);
+    color: var(--text-faint);
+    font-size: 0.68rem;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    border-color: var(--line);
+}
+
+.metrics-table td { border-color: var(--line); color: var(--text-dim); font-size: 0.76rem; }
+.metrics-table strong { color: var(--text); }
+
+.subgroup-tile {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+}
+
+.subgroup-tile.underpowered { border-color: rgba(255, 176, 32, 0.4); }
+
+/* ---------- Evidence tiles / chips (Study Info) ---------- */
+.evidence-tile {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+}
+
+.evidence-tile strong { color: var(--text); font-size: 1.05rem; letter-spacing: -0.4px; }
+.evidence-tile.evidence-good { border-color: rgba(194, 240, 74, 0.4); background: rgba(194, 240, 74, 0.07); }
+.evidence-tile.evidence-good strong { color: var(--lime); }
+.evidence-label { color: var(--text-faint); }
+
+.sig-yes  { background: rgba(194, 240, 74, 0.14); color: var(--lime); }
+.sig-none { background: rgba(255, 176, 32, 0.14); color: var(--warn); }
+
+.risk-low    { background: rgba(126, 224, 129, 0.14); color: var(--ok); }
+.risk-medium { background: rgba(255, 176, 32, 0.14); color: var(--warn); }
+.risk-high   { background: rgba(255, 92, 92, 0.16); color: var(--danger); }
+
+.session-id-chip { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--r-pill); }
+.session-id-chip strong { color: var(--accent-soft); }
+
+kbd {
+    background: var(--surface-3);
+    border-color: var(--line-strong);
+    color: var(--text);
+}
+
+/* ---------- Toasts ---------- */
+.toast {
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--r-md);
+    color: var(--text);
+}
+
+.toast-success { border-left-color: var(--lime); }
+.toast-success > i { color: var(--lime); }
+.toast-info    { border-left-color: var(--cyan); }
+.toast-info > i { color: var(--cyan); }
+.toast-warning { border-left-color: var(--warn); }
+.toast-warning > i { color: var(--warn); }
+.toast-error   { border-left-color: var(--danger); }
+.toast-error > i { color: var(--danger); }
+
+/* ---------- Footer ---------- */
+.app-footer { color: var(--text-faint); font-size: 0.7rem; }
+.status-indicator.connected { background: var(--lime); box-shadow: 0 0 8px rgba(194, 240, 74, 0.6); }
+
+/* ---------- Scrollbars ---------- */
+.scrollable-container::-webkit-scrollbar { width: 8px; }
+.scrollable-container::-webkit-scrollbar-track { background: transparent; }
+.scrollable-container::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: var(--r-pill); }
+.scrollable-container::-webkit-scrollbar-thumb:hover { background: #33343b; }
+
+/* ---------- Focus ring matches the accent ---------- */
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ---------- Voice command input ---------- */
+.voice-input-control {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+}
+
+.voice-input-control .icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+}
+
+.voice-status-text {
+    color: var(--text-faint);
+    font-size: 0.7rem;
+    white-space: nowrap;
+}
+
+.voice-input-control.listening {
+    border-color: rgba(255, 107, 44, 0.55);
+    background: rgba(255, 107, 44, 0.10);
+}
+
+.voice-input-control.listening .icon-btn { color: var(--accent); }
+.voice-input-control.listening .voice-status-text { color: var(--accent-soft); }
+
+/* Listening HUD */
+.voice-hud {
+    position: fixed;
+    left: 50%;
+    bottom: 1.4rem;
+    transform: translateX(-50%);
+    z-index: 4200;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    max-width: min(560px, calc(100vw - 2.5rem));
+    padding: 0.7rem 0.9rem;
+    background: rgba(22, 23, 27, 0.97);
+    border: 1px solid rgba(255, 107, 44, 0.4);
+    border-radius: var(--r-pill);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
+}
+
+.voice-hud.hidden { display: none; }
+
+.voice-hud-pulse {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    border-radius: 50%;
+    background: rgba(255, 107, 44, 0.16);
+    color: var(--accent);
+    animation: voice-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes voice-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 107, 44, 0.45); }
+    50%      { box-shadow: 0 0 0 9px rgba(255, 107, 44, 0); }
+}
+
+.voice-hud-body { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.voice-hud-label { color: var(--accent-soft); font-size: 0.66rem; letter-spacing: 0.6px; text-transform: uppercase; }
+.voice-hud-transcript {
+    color: var(--text);
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.voice-hud-close {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0.2rem;
+}
+
+.voice-hud-close:hover { color: var(--text); }
+
+/* Command reference list */
+.voice-cmd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.4rem;
+    margin-top: 0.7rem;
+}
+
+.voice-cmd-row {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-sm);
+    padding: 0.45rem 0.65rem;
+}
+
+.voice-cmd-phrase { color: var(--text); font-size: 0.78rem; }
+
+@media (prefers-reduced-motion: reduce) {
+    .voice-hud-pulse { animation: none; }
+}
+
+/* Voice unavailable (e.g. offline — browser speech recognition is cloud-based) */
+.voice-input-control.unavailable {
+    border-color: rgba(255, 176, 32, 0.35);
+    background: rgba(255, 176, 32, 0.06);
+}
+
+.voice-input-control.unavailable .icon-btn { color: var(--warn); }
+.voice-input-control.unavailable .voice-status-text { color: var(--warn); }

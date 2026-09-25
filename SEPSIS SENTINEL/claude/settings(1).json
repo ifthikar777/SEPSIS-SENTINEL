@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/free_port.py 8000",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

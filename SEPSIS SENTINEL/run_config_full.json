@@ -1,0 +1,180 @@
+{
+    "dataset_mode": "full",
+    "sample_label": "Full PhysioNet/CinC 2019 corpus (training sets A+B)",
+    "source": "C:\\Users\\kprat\\OneDrive\\Desktop\\SepsisGuard\\SepsisGuard-main\\data\\physionet2019",
+    "set_directories": [
+        "C:\\Users\\kprat\\OneDrive\\Desktop\\SepsisGuard\\SepsisGuard-main\\data\\physionet2019\\training_setA",
+        "C:\\Users\\kprat\\OneDrive\\Desktop\\SepsisGuard\\SepsisGuard-main\\data\\physionet2019\\training_setB"
+    ],
+    "train_patients_count": 32268,
+    "test_patients_count": 8068,
+    "train_rows_count": 1240596,
+    "test_rows_count": 311614,
+    "random_seeds_evaluated": [
+        42,
+        100,
+        2026,
+        999,
+        123
+    ],
+    "feature_list": [
+        "Age",
+        "Gender",
+        "ICULOS",
+        "HospAdmTime",
+        "HR",
+        "O2Sat",
+        "Temp",
+        "SBP",
+        "MAP",
+        "Resp",
+        "WBC",
+        "Creatinine",
+        "Bilirubin_total",
+        "Platelets",
+        "Glucose",
+        "Lactate",
+        "pH",
+        "PaCO2",
+        "BUN",
+        "Hgb",
+        "PTT",
+        "HCO3",
+        "Age_nan",
+        "Gender_nan",
+        "ICULOS_nan",
+        "HospAdmTime_nan",
+        "HR_nan",
+        "O2Sat_nan",
+        "Temp_nan",
+        "SBP_nan",
+        "MAP_nan",
+        "Resp_nan",
+        "WBC_nan",
+        "Creatinine_nan",
+        "Bilirubin_total_nan",
+        "Platelets_nan",
+        "Glucose_nan",
+        "Lactate_nan",
+        "pH_nan",
+        "PaCO2_nan",
+        "BUN_nan",
+        "Hgb_nan",
+        "PTT_nan",
+        "HCO3_nan"
+    ],
+    "missingness_rates": {
+        "Age": {
+            "percent_missing": 0.0,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "Gender": {
+            "percent_missing": 0.0,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "ICULOS": {
+            "percent_missing": 0.0,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "HospAdmTime": {
+            "percent_missing": 0.0005153941799112234,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "HR": {
+            "percent_missing": 9.882618975525219,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "O2Sat": {
+            "percent_missing": 13.061119307310223,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "Temp": {
+            "percent_missing": 66.16269705774349,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "SBP": {
+            "percent_missing": 14.576958014701619,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "MAP": {
+            "percent_missing": 12.451279143930268,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "Resp": {
+            "percent_missing": 15.354558983642677,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "WBC": {
+            "percent_missing": 93.59319937379608,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "Creatinine": {
+            "percent_missing": 93.90443303418996,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "Bilirubin_total": {
+            "percent_missing": 98.5091579103343,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "Platelets": {
+            "percent_missing": 94.05950225807075,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "Glucose": {
+            "percent_missing": 82.89432486583645,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "Lactate": {
+            "percent_missing": 97.32987160242493,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "pH": {
+            "percent_missing": 93.06968773555124,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "PaCO2": {
+            "percent_missing": 94.44012085993518,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "BUN": {
+            "percent_missing": 93.13443412940259,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "Hgb": {
+            "percent_missing": 92.61755819122412,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "PTT": {
+            "percent_missing": 97.05587517152962,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        },
+        "HCO3": {
+            "percent_missing": 95.81061840859162,
+            "imputation_method": "patient-level forward-fill, then dataset-level median fallback"
+        }
+    },
+    "imputation_strategy": "Patient-level forward-fill, followed by median fallback, with missingness-indicator flags",
+    "split_seed": 42,
+    "model_seed": 42,
+    "hyperparameters": {
+        "objective": "binary",
+        "metric": "binary_logloss",
+        "boosting_type": "gbdt",
+        "learning_rate": 0.05,
+        "num_leaves": 31,
+        "max_depth": 6,
+        "feature_fraction": 0.8,
+        "verbose": -1,
+        "seed": 42
+    },
+    "decision_thresholds": {
+        "alert_threshold": 0.010900849054770389,
+        "high_risk_threshold": 0.04158207816165758,
+        "youden_j_threshold": 0.016172912428049812,
+        "target_sensitivity_alert": 0.85,
+        "target_sensitivity_high": 0.5,
+        "selected_on": "validation split held out from training patients",
+        "validation_patients": 6454,
+        "validation_rows": 248648
+    }
+}

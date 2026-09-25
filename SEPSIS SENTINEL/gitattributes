@@ -1,0 +1,55 @@
+# Normalise line endings.
+#
+# Text files are stored with LF in the repository regardless of the platform
+# they were authored on. Windows working copies still get CRLF on checkout
+# (core.autocrlf handles that), so nothing changes day to day — this only stops
+# the same file showing up as a whole-file diff when edited from another machine.
+* text=auto eol=lf
+
+# Explicit text types, so detection never has to guess
+*.py      text eol=lf
+*.js      text eol=lf
+*.css     text eol=lf
+*.html    text eol=lf
+*.json    text eol=lf
+*.jsonl   text eol=lf
+*.md      text eol=lf
+*.txt     text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.cfg     text eol=lf
+*.toml    text eol=lf
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+
+# Windows-only scripts must keep CRLF or they can fail to run
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary assets: never convert line endings, never attempt a text diff
+*.woff2   binary
+*.woff    binary
+*.ttf     binary
+*.eot     binary
+*.otf     binary
+*.xlsx    binary
+*.xls     binary
+*.parquet binary
+*.pkl     binary
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.ico     binary
+*.pdf     binary
+
+# Third-party assets: exclude from GitHub's language statistics and collapse
+# them in pull-request diffs. Without this, ~80 KB of minified vendor CSS makes
+# the repository look like a CSS project rather than a Python one.
+static/vendor/** linguist-vendored
+
+# Generated pipeline outputs — real files, but not hand-authored source
+metrics_summary.json linguist-generated
+run_config.json      linguist-generated
+leakage_audit.json   linguist-generated
